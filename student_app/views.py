@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse
-from rest_framework import status
+from rest_framework import status, mixins, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Student
@@ -12,36 +12,30 @@ def home(request):
     return HttpResponse("Students API")
 
 
-class Students(APIView):
-    def get(self, request, format=None):
-        students = Student.objects.all()
-        return Response(
-            StudentSerializer(students, many=True).data, status=status.HTTP_200_OK
-        )
+class Students(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
 
-    def post(self, request, format=None):
-        student = StudentSerializer(data=request.data)
-        if student.is_valid():
-            student.save()
-            return Response(student.data, status=status.HTTP_201_CREATED)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
 
 
-class StudentDetail(APIView):
+class StudentDetail(mixins.RetrieveModelMixin,
+                    mixins.UpdateModelMixin,
+                    mixins.DestroyModelMixin,
+                    generics.GenericAPIView):
+    
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
 
-    def student_detail(self, pk):
-        return Student.objects.get(pk=pk)
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
-    def get(self, request, pk, format=None):
-        return Response(
-            StudentSerializer(self.student_detail(pk)).data, status=status.HTTP_200_OK
-        )
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
-    def put(self, request, pk, format=None):
-        student = StudentSerializer(self.student_detail(pk), data=request.data)
-        if student.is_valid():
-            student.save()
-            return Response(student.data, status=status.HTTP_202_ACCEPTED)
-
-    def delete(self, request, pk, format=None):
-        self.student_detail(pk).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def delete(self, request, *args, **kwargs):
+        return self.destroy(request, *args, **kwargs)
