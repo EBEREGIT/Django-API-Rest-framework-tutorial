@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Student
 from .serializer import StudentSerializer
+from rest_framework.views import APIView
 
 
 # Create your views here.
@@ -11,36 +12,36 @@ def home(request):
     return HttpResponse("Students API")
 
 
-@api_view(["GET", "POST"])
-def students(request):
-    if request.method == "GET":
+class Students(APIView):
+    def get(self, request, format=None):
         students = Student.objects.all()
         return Response(
             StudentSerializer(students, many=True).data, status=status.HTTP_200_OK
         )
 
-    if request.method == "POST":
+    def post(self, request, format=None):
         student = StudentSerializer(data=request.data)
         if student.is_valid():
             student.save()
             return Response(student.data, status=status.HTTP_201_CREATED)
 
 
-@api_view(["GET", "PUT", "DELETE"])
-def student_detail(request, pk):
-    student_detail = Student.objects.get(pk=pk)
+class StudentDetail(APIView):
 
-    if request.method == "GET":
+    def student_detail(self, pk):
+        return Student.objects.get(pk=pk)
+
+    def get(self, request, pk, format=None):
         return Response(
-            StudentSerializer(student_detail).data, status=status.HTTP_200_OK
+            StudentSerializer(self.student_detail(pk)).data, status=status.HTTP_200_OK
         )
 
-    if request.method == "PUT":
-        student = StudentSerializer(student_detail, data=request.data)
+    def put(self, request, pk, format=None):
+        student = StudentSerializer(self.student_detail(pk), data=request.data)
         if student.is_valid():
             student.save()
             return Response(student.data, status=status.HTTP_202_ACCEPTED)
 
-    if request.method == "DELETE":
-        student_detail.delete()
+    def delete(self, request, pk, format=None):
+        self.student_detail(pk).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
