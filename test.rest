@@ -1,0 +1,48 @@
+### login
+POST http://127.0.0.1:8000/login/
+Content-Type: application/json
+
+{
+    "username": "samsonebere",
+    "password": "samsonebere"
+}
+
+### register
+POST http://127.0.0.1:8000/register/
+Content-Type: application/json
+
+{
+    "username": "samsonebere",
+    "password": "samsonebere",
+    "email": "samsonebere@gmail.com"
+}
+
+### logout
+POST http://127.0.0.1:8000/logout/
+Content-Type: application/json
+Authorization: Token ca004f64d9451585c3b2913b470e9aa20c375e3f
+
+{
+    "token": "ca004f64d9451585c3b2913b470e9aa20c375e3f"
+}
+
+### get all students
+GET http://127.0.0.1:8000/students/
+Content-Type: application/json
+Authorization: Token c588448a7e192ccee4a5c41877f86a610fa26332
+
+### create student
+POST http://127.0.0.1:8000/students/
+Content-Type: application/json
+Authorization: Token c588448a7e192ccee4a5c41877f86a610fa26332
+
+{
+    "name": "Ebere 245 Njoku",
+    "email": "sam@gmail.com",
+    "about": "I am a software developer"
+}
+
+### get all students
+GET http://127.0.0.1:8000/students/4
+Content-Type: application/json
+Authorization: Token c588448a7e192ccee4a5c41877f86a610fa26332
